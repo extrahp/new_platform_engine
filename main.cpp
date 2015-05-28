@@ -12,6 +12,38 @@
 #include <string>
 #include <sstream>
 
+//The timer
+class Timer
+{
+    private:
+    //The clock time when the timer started
+    int startTicks;
+
+    //The ticks stored when the timer was paused
+    int pausedTicks;
+
+    //The timer status
+    bool paused;
+    bool started;
+
+    public:
+    //Initializes variables
+    Timer();
+
+    //The various clock actions
+    void start();
+    void stop();
+    void pause();
+    void unpause();
+
+    //Gets the timer's time
+    int get_ticks();
+
+    //Checks the status of the timer
+    bool is_started();
+    bool is_paused();
+};
+
 //The frames per second
 const int FRAMES_PER_SECOND = 60;
 
@@ -20,6 +52,8 @@ const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
 const int SCREEN_BPP = 32;
 const char* WINDOW_NAME = "Game";
+Timer frame_rate_timer;
+
 SDL_Event event;
 //The images
 SDL_Surface* screen = NULL;
@@ -42,7 +76,6 @@ SDL_Surface * load_image(std::string filename ) {
 
     //If the image loaded
     if( loadedImage != NULL ) {
-    	SDL_WM_SetCaption( "HI", NULL );
         //Create an optimized image
         optimizedImage = SDL_DisplayFormatAlpha( loadedImage );
 
@@ -52,18 +85,6 @@ SDL_Surface * load_image(std::string filename ) {
 
     //Return the optimized image
     return optimizedImage;
-}
-
-void apply_surface(int x, int y, SDL_Surface* source, SDL_Surface* destination, SDL_Rect * clip = NULL) {
-    //Temporary rectangle to hold the offsets
-    SDL_Rect offset;
-
-    //Get the offsets
-    offset.x = x;
-    offset.y = y;
-
-    //Blit the surface
-    SDL_BlitSurface( source, clip, destination, &offset );
 }
 
 // -------------------------------------------------------------------------------------------------------------------
@@ -82,7 +103,8 @@ bool load_files() {
 }
 
 void game_tick() {
-	apply_surface(test->getX(), test->getY(), test->getSheet(), screen, test->getCrop(0, 0));
+	test->update();
+	test->draw(screen);
 	return;
 }
 
@@ -112,8 +134,10 @@ int main( int argc, char* args[] ) {
 
 	test = new BaseObject(600, 400, bearSprite);
 	test->setCrop(31, 49, 1, 2);
+	test->setAnimation(0, 0, 12, true);
 
 	while (!game_end) {
+		frame_rate_timer.start();
 		game_tick();
 		while (SDL_PollEvent(&event)) {
 			if( event.type == SDL_QUIT ) {
@@ -125,6 +149,10 @@ int main( int argc, char* args[] ) {
 		if( SDL_Flip( screen ) == -1 ) {
 			return 1;
 		}
+		if (frame_rate_timer.get_ticks() < 1000 / FRAMES_PER_SECOND ) {
+			SDL_Delay(( 1000 / FRAMES_PER_SECOND ) - frame_rate_timer.get_ticks());
+		}
+
 	}
     //Quit SDL
     SDL_Quit();
@@ -132,4 +160,94 @@ int main( int argc, char* args[] ) {
     return 0;
 }
 
+//---------------------------------------------------- Timer --------------------------------------------------------
+Timer::Timer()
+{
+    //Initialize the variables
+    startTicks = 0;
+    pausedTicks = 0;
+    paused = false;
+    started = false;
+}
 
+void Timer::start()
+{
+    //Start the timer
+    started = true;
+
+    //Unpause the timer
+    paused = false;
+
+    //Get the current clock time
+    startTicks = SDL_GetTicks();
+}
+
+void Timer::stop()
+{
+    //Stop the timer
+    started = false;
+
+    //Unpause the timer
+    paused = false;
+}
+
+int Timer::get_ticks()
+{
+    //If the timer is running
+    if( started == true )
+    {
+        //If the timer is paused
+        if( paused == true )
+        {
+            //Return the number of ticks when the timer was paused
+            return pausedTicks;
+        }
+        else
+        {
+            //Return the current time minus the start time
+            return SDL_GetTicks() - startTicks;
+        }
+    }
+
+    //If the timer isn't running
+    return 0;
+}
+
+void Timer::pause()
+{
+    //If the timer is running and isn't already paused
+    if( ( started == true ) && ( paused == false ) )
+    {
+        //Pause the timer
+        paused = true;
+
+        //Calculate the paused ticks
+        pausedTicks = SDL_GetTicks() - startTicks;
+    }
+}
+
+void Timer::unpause()
+{
+    //If the timer is paused
+    if( paused == true )
+    {
+        //Unpause the timer
+        paused = false;
+
+        //Reset the starting ticks
+        startTicks = SDL_GetTicks() - pausedTicks;
+
+        //Reset the paused ticks
+        pausedTicks = 0;
+    }
+}
+
+bool Timer::is_started()
+{
+    return started;
+}
+
+bool Timer::is_paused()
+{
+    return paused;
+}

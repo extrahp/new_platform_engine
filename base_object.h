@@ -25,7 +25,7 @@ class BaseObject {
         void setGravity(int g); // set a gravity multiplier (0 to 1)
         bool isSolid(); // check if is solid object (can phase through or not)
         void setSolid(bool s); // set solid or not
-        SDL_Surface * getCurrentImage(); // return the current image based on animation and frame
+        SDL_Surface * draw(SDL_Surface * original); // return the current image based on animation and frame
         void setSheet(SDL_Surface*); // set the sprite sheet for this object
         SDL_Surface * getSheet(); // get the sprite sheet for this object
         SDL_Rect * getCrop(int x, int y); // get the frame crop
@@ -34,6 +34,9 @@ class BaseObject {
         void setAnimation(int anim, int frame, int speed, bool loop); // set a new animation with speed and looping?
         int getFrame(); // get the current frame of the animation
         void setFrame(int frame); // set a new frame of the animation
+        bool getVisible(); // get if object is visible or not
+        void setVisible(bool v); // set the visibility
+        void update(); // update ticks
     private:
         int sprite_frame;
         int sprite_anim;
@@ -41,6 +44,7 @@ class BaseObject {
         int animation_ticks;
         int animation_mapping[100];
         bool looping;
+        bool visible;
         int velX;
         int velY;
         int xpos;
@@ -50,8 +54,6 @@ class BaseObject {
         SDL_Surface * display_image;
         SDL_Surface * sprite_sheet;
         SDL_Rect ** frame_crop;
-
-        void update(); // update ticks
         void update_animation(); //helper function to handle graphical aspect of object
 };
 
