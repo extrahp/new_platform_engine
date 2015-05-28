@@ -12,6 +12,9 @@
 #include <string>
 #include <sstream>
 
+//The frames per second
+const int FRAMES_PER_SECOND = 60;
+
 //The attributes of the screen
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;

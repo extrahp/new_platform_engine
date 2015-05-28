@@ -15,6 +15,11 @@ BaseObject::BaseObject(int x, int y, SDL_Surface * sheet = NULL) {
     ypos = y;
     sprite_anim = 0;
     sprite_frame = 0;
+    animation_speed = 0;
+    animation_ticks = 0;
+    for (int i = 0; i < 100; i++) 
+        animation_mapping[i] = 0;
+    looping = false;
     velX = 0;
     velY = 0;
     gravity = 1;
@@ -30,9 +35,6 @@ void BaseObject::setX(int x) {
 
 void BaseObject::setY(int y) {
     ypos = y;
-}
-
-void BaseObject::update() {
 }
 
 int BaseObject::getX() {
@@ -77,4 +79,46 @@ void BaseObject::setCrop(int w, int h, int row, int col) {
 		}
 	}
 	frame_crop = new_frame_crop;
+}
+
+int getAnim() {
+    return sprite_anim;
+}
+
+void setAnimation(int anim, int frame, int speed, bool loop) {
+    sprite_anim = anim;
+    sprite_frame = frame;
+    animation_speed = speed;
+    bool looping = loop;
+    animation_ticks = 0; // reset frame ticking
+}
+
+int getFrame() {
+    return sprite_frame;
+}
+
+void setFrame(int frame) {
+    sprite_frame = frame;
+    animation_ticks = 0; // reset frame ticking
+}
+
+// --------------------------- Private Stuff ------------------------------
+
+// Function to handle all sorts of things that happen inside this object every tick
+void BaseObject::update() {
+    update_animation(); // update sprite animation ticks
+}
+
+void BaseObject::update_animation() {
+    if (animation_speed != 0) { // if the speed is not 0
+        if (animation_ticks < animation_speed) 
+            animation_ticks ++; // increase tick if not passed speed-tick-count
+        else {
+            animation_ticks = 0; // reset the tick
+            if (sprite_frame < animation_mapping[sprite_anim])
+                sprite_frame ++; // move to next frame in animation if not at end
+            else if (looping)
+                sprite_frame = 0; // if at end and looping is true, loop back to first frame
+        }
+    }
 }

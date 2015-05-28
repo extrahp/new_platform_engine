@@ -17,7 +17,6 @@ class BaseObject {
         void setY(int y); // set specific Y position
         int getX(); // get current X position
         int getY(); // get current Y position
-        void update(); // update ticks
         void setVelX(int x); // set a horizontal speed
         void setVelY(int y); // set a vertical speed
         int getVelX(); // get the current horizontal speed
@@ -32,12 +31,16 @@ class BaseObject {
         SDL_Rect * getCrop(int x, int y); // get the frame crop
         void setCrop(int w, int h, int r, int c); // set the default frame crops with frame width, height, and number of rows and columns
         int getAnim(); // get the current animation
-        void setAnimation(int anim, int speed, bool loop); // set a new animation with speed and looping?
+        void setAnimation(int anim, int frame, int speed, bool loop); // set a new animation with speed and looping?
         int getFrame(); // get the current frame of the animation
         void setFrame(int frame); // set a new frame of the animation
     private:
         int sprite_frame;
         int sprite_anim;
+        int animation_speed;
+        int animation_ticks;
+        int animation_mapping[100];
+        bool looping;
         int velX;
         int velY;
         int xpos;
@@ -48,6 +51,8 @@ class BaseObject {
         SDL_Surface * sprite_sheet;
         SDL_Rect ** frame_crop;
 
+        void update(); // update ticks
+        void update_animation(); //helper function to handle graphical aspect of object
 };
 
 #endif /* BASE_OBJECT_H_ */
