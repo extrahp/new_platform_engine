@@ -79,7 +79,7 @@ bool load_files() {
 }
 
 void game_tick() {
-	apply_surface(test->getX(), test->getY(), test->getSheet(), screen, test->getFrame(0, 0));
+	apply_surface(test->getX(), test->getY(), test->getSheet(), screen, test->getCrop(0, 0));
 	return;
 }
 

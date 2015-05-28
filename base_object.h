@@ -12,29 +12,32 @@
 
 class BaseObject {
     public:
-        void setX(int x);
-        void setY(int y);
-        int getX();
-        int getY();
-        int getFrame();
-        BaseObject(int x, int y, SDL_Surface *);
-        void update();
-        void setVelX(int x);
-        void setVelY(int y);
-        int getVelX();
-        int getVelY();
-        bool getGravity();
-        void setGravity(int g);
-        bool isSolid();
-        void setSolid(bool s);
-        SDL_Surface * getCurrentImage();
-        void setImage(SDL_Surface*);
-        void setSheet(SDL_Surface*);
-        SDL_Surface * getSheet();
-        void setCrop(int w, int h, int r, int c);
-        SDL_Rect * getFrame(int x, int y);
+		BaseObject(int x, int y, SDL_Surface *); // Constructor
+        void setX(int x); // set specific X position
+        void setY(int y); // set specific Y position
+        int getX(); // get current X position
+        int getY(); // get current Y position
+        void update(); // update ticks
+        void setVelX(int x); // set a horizontal speed
+        void setVelY(int y); // set a vertical speed
+        int getVelX(); // get the current horizontal speed
+        int getVelY(); // get the current vertical speed
+        bool getGravity(); // get the gravity multiplier
+        void setGravity(int g); // set a gravity multiplier (0 to 1)
+        bool isSolid(); // check if is solid object (can phase through or not)
+        void setSolid(bool s); // set solid or not
+        SDL_Surface * getCurrentImage(); // return the current image based on animation and frame
+        void setSheet(SDL_Surface*); // set the sprite sheet for this object
+        SDL_Surface * getSheet(); // get the sprite sheet for this object
+        SDL_Rect * getCrop(int x, int y); // get the frame crop
+        void setCrop(int w, int h, int r, int c); // set the default frame crops with frame width, height, and number of rows and columns
+        int getAnim(); // get the current animation
+        void setAnimation(int anim, int speed, bool loop); // set a new animation with speed and looping?
+        int getFrame(); // get the current frame of the animation
+        void setFrame(int frame); // set a new frame of the animation
     private:
-        int spriteframe;
+        int sprite_frame;
+        int sprite_anim;
         int velX;
         int velY;
         int xpos;

@@ -13,7 +13,8 @@
 BaseObject::BaseObject(int x, int y, SDL_Surface * sheet = NULL) {
     xpos = x;
     ypos = y;
-    spriteframe = 0;
+    sprite_anim = 0;
+    sprite_frame = 0;
     velX = 0;
     velY = 0;
     gravity = 1;
@@ -34,10 +35,6 @@ void BaseObject::setY(int y) {
 void BaseObject::update() {
 }
 
-int BaseObject::getFrame() {
-    return spriteframe;
-}
-
 int BaseObject::getX() {
     return xpos;
 }
@@ -54,10 +51,6 @@ int BaseObject:: getVelY() {
     return velY;
 }
 
-void BaseObject:: setImage(SDL_Surface * image) {
-	display_image = image;
-}
-
 SDL_Surface * BaseObject:: getCurrentImage() {
 	return display_image;
 }
@@ -69,7 +62,7 @@ void BaseObject::setSheet(SDL_Surface* sheet) {
 	sprite_sheet = sheet;
 }
 
-SDL_Rect * BaseObject::getFrame(int x, int y) {
+SDL_Rect * BaseObject::getCrop(int x, int y) {
 	return &frame_crop[x][y];
 }
 void BaseObject::setCrop(int w, int h, int row, int col) {
