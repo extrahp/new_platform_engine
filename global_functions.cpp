@@ -20,3 +20,20 @@ void draw_image(int x, int y, SDL_Surface* source, SDL_Surface* destination, SDL
 	//Blit the surface
 	SDL_BlitSurface( source, clip, destination, &offset );
 }
+
+void console_output( const std::string &text ) {
+    std::ofstream log_file(
+        "log_file.txt", std::ios_base::out | std::ios_base::app );
+    log_file << text << std::endl;
+}
+
+CollisionBox::CollisionBox(int xpos, int ypos, int width, int height) {
+	x = xpos;
+	y = ypos;
+	w = width;
+	h = height;
+	top = ypos;
+	left = xpos;
+	right = xpos + width;
+	bottom = ypos + height;
+}

@@ -9,7 +9,6 @@
 #include <string>
 #include <sstream>
 #include "base_object.h"
-#include "global_functions.h"
 
 BaseObject::BaseObject(int x, int y, SDL_Surface * sheet = NULL) {
     xpos = x;
@@ -30,6 +29,7 @@ BaseObject::BaseObject(int x, int y, SDL_Surface * sheet = NULL) {
     sprite_sheet = sheet;
     frame_crop = NULL;
     animation_mapping[0] = 2;
+    clsn = NULL;
 }
 
 void BaseObject::setX(int x) {
@@ -117,6 +117,24 @@ bool BaseObject::getVisible() {
 
 void BaseObject::setVisible(bool v) {
 	visible = v;
+}
+
+CollisionBox * BaseObject::getClsn() {
+	return clsn;
+}
+
+void BaseObject::setClsn(int x, int y, int w, int h) {
+	clsn = new CollisionBox(x, y, w, h);
+}
+
+bool BaseObject::isColliding(CollisionBox * other) {
+	bool xsatisfy = false;
+	bool ysatisfy = false;
+	if (clsn != NULL) {
+		xsatisfy = ((clsn->left >= other->left && clsn->left <= other->right) or (clsn->right >= other->left && clsn->right <= other->right));
+		ysatisfy = ((clsn->top >= other->top && clsn->top <= other->bottom) or (clsn->bottom >= other->top && clsn->bottom <= other->bottom));
+	}
+	return xsatisfy && ysatisfy;
 }
 // --------------------------- Private Stuff ------------------------------
 

@@ -11,6 +11,7 @@
 #include "base_object.h"
 #include <string>
 #include <sstream>
+#include "global_functions.h"
 
 //The timer
 class Timer
@@ -156,7 +157,6 @@ int main( int argc, char* args[] ) {
 	}
     //Quit SDL
     SDL_Quit();
-
     return 0;
 }
 

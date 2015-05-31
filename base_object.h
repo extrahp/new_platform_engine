@@ -6,6 +6,7 @@
  */
 #include "SDL/SDL.h"
 #include "SDL/SDL_image.h"
+#include "global_functions.h"
 
 #ifndef BASE_OBJECT_H_
 #define BASE_OBJECT_H_
@@ -37,6 +38,9 @@ class BaseObject {
         bool getVisible(); // get if object is visible or not
         void setVisible(bool v); // set the visibility
         void update(); // update ticks
+        CollisionBox * getClsn();
+        void setClsn(int x, int y, int w, int h);
+        bool isColliding(CollisionBox * other);
     private:
         int sprite_frame;
         int sprite_anim;
@@ -55,6 +59,7 @@ class BaseObject {
         SDL_Surface * sprite_sheet;
         SDL_Rect ** frame_crop;
         void update_animation(); //helper function to handle graphical aspect of object
+        CollisionBox * clsn;
 };
 
 #endif /* BASE_OBJECT_H_ */
