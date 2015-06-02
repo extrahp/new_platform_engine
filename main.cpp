@@ -54,14 +54,17 @@ const int SCREEN_HEIGHT = 720;
 const int SCREEN_BPP = 32;
 const char* WINDOW_NAME = "Game";
 Timer frame_rate_timer;
-
 SDL_Event event;
 //The images
 SDL_Surface* screen = NULL;
 
 //TEST VARIABLES
 SDL_Surface * bearSprite = NULL;
+SDL_Surface * platSprite = NULL;
+SDL_Surface * bg = NULL;
 BaseObject * test;
+BaseObject * platform;
+BaseObject * things [2];
 
 // ----------------------------------------------------- Core SDL Functions --------------------------------------------------------------
 SDL_Surface * load_image(std::string filename ) {
@@ -93,26 +96,22 @@ SDL_Surface * load_image(std::string filename ) {
 bool load_files() {
     //Load the images
     bearSprite = load_image("bear1.png");
-    //If there was an error in loading the image
-    if(bearSprite == NULL )
-    {
-        return false;
-    }
-
-    //If everything loaded fine
+    platSprite = load_image("platform.png");
+    bg = load_image("bg.png");
     return true;
 }
 
 void game_tick() {
-	test->update();
+	test->update(things);
+	platform->update(things);
+	draw_image(0, 0, bg, screen);
 	test->draw(screen);
+	platform->draw(screen);
 	return;
 }
 
 int main( int argc, char* args[] ) {
-
 	bool game_end = false;
-
     //Start SDL
 	if( SDL_Init( SDL_INIT_EVERYTHING ) == -1 ) {
 		return false;
@@ -133,9 +132,19 @@ int main( int argc, char* args[] ) {
 		game_end = true;
 	}
 
-	test = new BaseObject(600, 400, bearSprite);
+	test = new BaseObject(565, 200, bearSprite);
 	test->setCrop(31, 49, 1, 2);
 	test->setAnimation(0, 0, 12, true);
+	test->setClsn(31, 49, 15, 49);
+	test->setOrigin(15, 49);
+	test->setGravity(0.5);
+	platform = new BaseObject(550, 400, platSprite);
+	platform->setCrop(100, 30, 1, 1);
+	platform->setClsn(100, 30);
+	platform->setSolid(true);
+	platform->setGravity(0);
+	things[0] = test;
+	things[1] = platform;
 
 	while (!game_end) {
 		frame_rate_timer.start();
@@ -144,7 +153,6 @@ int main( int argc, char* args[] ) {
 			if( event.type == SDL_QUIT ) {
 				game_end = true;
 			}
-
 		}
 		//Update Screen
 		if( SDL_Flip( screen ) == -1 ) {

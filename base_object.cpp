@@ -13,6 +13,8 @@
 BaseObject::BaseObject(int x, int y, SDL_Surface * sheet = NULL) {
     xpos = x;
     ypos = y;
+    originXoffset = 0;
+    originYoffset = 0;
     sprite_anim = 0;
     sprite_frame = 0;
     animation_speed = 0;
@@ -48,21 +50,47 @@ int BaseObject:: getY() {
     return ypos;
 }
 
-int BaseObject::getVelX() {
+float BaseObject::getVelX() {
     return velX;
 }
 
-int BaseObject:: getVelY() {
+float BaseObject:: getVelY() {
     return velY;
 }
 
 // Function to handle all sorts of things that happen inside this object every tick
-void BaseObject::update() {
+void BaseObject::update(BaseObject * things[]) {
+	xpos += velX;
+	ypos += velY;
+	if (clsn != NULL)
+		clsn->update(xpos, ypos);
+	bool hitFloor = false;
+	for (int i = 0; i < 2; i++) {
+		if (things[i] != this) {
+			if (things[i]->isSolid()) {
+				if (isColliding(things[i]->getClsn())) {
+					if (clsn->bottom >= things[i]->getClsn()->top) {
+						hitFloor = true;
+						velY = 0;
+					}
+				}
+			}
+		}
+	}
+	if (!hitFloor && gravity > 0) {
+		velY += gravity;
+	}
     update_animation(); // update sprite animation ticks
+    if (!solid) {
+		if (keyboard_pressed(SDLK_LEFT))
+			xpos -= 2;
+		if (keyboard_pressed(SDLK_RIGHT))
+			xpos += 2;
+    }
 }
 
 SDL_Surface * BaseObject::draw(SDL_Surface * original) {
-	draw_image(xpos, ypos, sprite_sheet, original, getCrop(sprite_anim, sprite_frame));
+	draw_image(xpos - originXoffset, ypos - originYoffset, sprite_sheet, original, getCrop(sprite_anim, sprite_frame));
 	return display_image;
 }
 
@@ -123,8 +151,8 @@ CollisionBox * BaseObject::getClsn() {
 	return clsn;
 }
 
-void BaseObject::setClsn(int x, int y, int w, int h) {
-	clsn = new CollisionBox(x, y, w, h);
+void BaseObject::setClsn(int w, int h, int offX, int offY) {
+	clsn = new CollisionBox(xpos, ypos, w, h, offX, offY);
 }
 
 bool BaseObject::isColliding(CollisionBox * other) {
@@ -135,6 +163,23 @@ bool BaseObject::isColliding(CollisionBox * other) {
 		ysatisfy = ((clsn->top >= other->top && clsn->top <= other->bottom) or (clsn->bottom >= other->top && clsn->bottom <= other->bottom));
 	}
 	return xsatisfy && ysatisfy;
+}
+
+void BaseObject::setOrigin(int x, int y) {
+	originXoffset = x;
+	originYoffset = y;
+}
+
+void BaseObject::setSolid(bool s) {
+	solid = s;
+}
+
+bool BaseObject::isSolid() {
+	return solid;
+}
+
+void BaseObject::setGravity(float g) {
+	gravity = g;
 }
 // --------------------------- Private Stuff ------------------------------
 

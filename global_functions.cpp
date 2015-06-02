@@ -8,6 +8,13 @@
 #include "SDL/SDL.h"
 #include "SDL/SDL_image.h"
 #include "global_functions.h"
+#include <string>
+#include <sstream>
+
+bool keyboard_pressed(int key) {
+	Uint8 * keyboard_check = SDL_GetKeyState(NULL);
+	return keyboard_check[key];
+}
 
 void draw_image(int x, int y, SDL_Surface* source, SDL_Surface* destination, SDL_Rect * clip) {
 	//Temporary rectangle to hold the offsets
@@ -27,13 +34,28 @@ void console_output( const std::string &text ) {
     log_file << text << std::endl;
 }
 
-CollisionBox::CollisionBox(int xpos, int ypos, int width, int height) {
-	x = xpos;
-	y = ypos;
+std::string toString(int i) {
+	std::string test;
+	std::ostringstream convert;
+	convert << i;
+	test = convert.str();
+	return test;
+}
+
+CollisionBox::CollisionBox(int x, int y, int width, int height, int offX, int offY) {
+	offsetX = offX;
+	offsetY = offY;
 	w = width;
 	h = height;
-	top = ypos;
-	left = xpos;
-	right = xpos + width;
-	bottom = ypos + height;
+	top = y;
+	left = x;
+	right = x + width;
+	bottom = y + height;
+}
+
+void CollisionBox::update(int xpos, int ypos) {
+	top = ypos - offsetY;
+	left = xpos - offsetX;
+	right = left + w;
+	bottom = top + h;
 }

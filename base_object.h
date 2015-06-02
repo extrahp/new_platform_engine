@@ -18,12 +18,12 @@ class BaseObject {
         void setY(int y); // set specific Y position
         int getX(); // get current X position
         int getY(); // get current Y position
-        void setVelX(int x); // set a horizontal speed
-        void setVelY(int y); // set a vertical speed
-        int getVelX(); // get the current horizontal speed
-        int getVelY(); // get the current vertical speed
+        void setVelX(float x); // set a horizontal speed
+        void setVelY(float y); // set a vertical speed
+        float getVelX(); // get the current horizontal speed
+        float getVelY(); // get the current vertical speed
         bool getGravity(); // get the gravity multiplier
-        void setGravity(int g); // set a gravity multiplier (0 to 1)
+        void setGravity(float g); // set a gravity multiplier (0 to 1)
         bool isSolid(); // check if is solid object (can phase through or not)
         void setSolid(bool s); // set solid or not
         SDL_Surface * draw(SDL_Surface * original); // return the current image based on animation and frame
@@ -32,28 +32,33 @@ class BaseObject {
         SDL_Rect * getCrop(int x, int y); // get the frame crop
         void setCrop(int w, int h, int r, int c); // set the default frame crops with frame width, height, and number of rows and columns
         int getAnim(); // get the current animation
-        void setAnimation(int anim, int frame, int speed, bool loop); // set a new animation with speed and looping?
+        void setAnimation(int anim, int frame, int speed, bool loop = true); // set a new animation with speed and looping?
         int getFrame(); // get the current frame of the animation
         void setFrame(int frame); // set a new frame of the animation
         bool getVisible(); // get if object is visible or not
         void setVisible(bool v); // set the visibility
-        void update(); // update ticks
+        void update(BaseObject * things[]); // update ticks
         CollisionBox * getClsn();
-        void setClsn(int x, int y, int w, int h);
+        void setClsn(int w, int h, int x = 0, int y = 0);
         bool isColliding(CollisionBox * other);
+        void setOrigin(int x, int y);
+        int getOriginX();
+        int getOriginY();
     private:
         int sprite_frame;
         int sprite_anim;
         int animation_speed;
         int animation_ticks;
         int animation_mapping[100];
+        int originXoffset;
+        int originYoffset;
         bool looping;
         bool visible;
-        int velX;
-        int velY;
-        int xpos;
-        int ypos;
-        int gravity;
+        float velX;
+        float velY;
+        float xpos;
+        float ypos;
+        float gravity;
         bool solid;
         SDL_Surface * display_image;
         SDL_Surface * sprite_sheet;
