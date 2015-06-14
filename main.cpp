@@ -12,6 +12,7 @@
 #include <string>
 #include <sstream>
 #include "global_functions.h"
+#include <vector>
 
 //The timer
 class Timer
@@ -65,6 +66,8 @@ SDL_Surface * bg = NULL;
 BaseObject * test;
 BaseObject * platform;
 BaseObject * things [2];
+std::vector<BaseObject> all_objects;
+
 
 // ----------------------------------------------------- Core SDL Functions --------------------------------------------------------------
 SDL_Surface * load_image(std::string filename ) {
@@ -102,8 +105,8 @@ bool load_files() {
 }
 
 void game_tick() {
-	test->update(things);
-	platform->update(things);
+	test->update(all_objects);
+	platform->update(all_objects);
 	draw_image(0, 0, bg, screen);
 	test->draw(screen);
 	platform->draw(screen);
@@ -131,13 +134,12 @@ int main( int argc, char* args[] ) {
 	if (!load_files()) {
 		game_end = true;
 	}
-
 	test = new BaseObject(565, 200, bearSprite);
 	test->setCrop(31, 49, 1, 2);
 	test->setAnimation(0, 0, 12, true);
 	test->setClsn(31, 49, 15, 49);
 	test->setOrigin(15, 49);
-	test->setGravity(0.5);
+	test->setGravity(0);
 	platform = new BaseObject(550, 400, platSprite);
 	platform->setCrop(100, 30, 1, 1);
 	platform->setClsn(100, 30);
@@ -145,6 +147,8 @@ int main( int argc, char* args[] ) {
 	platform->setGravity(0);
 	things[0] = test;
 	things[1] = platform;
+	all_objects.push_back(*test);
+	all_objects.push_back(*platform);
 
 	while (!game_end) {
 		frame_rate_timer.start();

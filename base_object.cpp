@@ -9,6 +9,7 @@
 #include <string>
 #include <sstream>
 #include "base_object.h"
+#include <vector>
 
 BaseObject::BaseObject(int x, int y, SDL_Surface * sheet = NULL) {
     xpos = x;
@@ -32,6 +33,10 @@ BaseObject::BaseObject(int x, int y, SDL_Surface * sheet = NULL) {
     frame_crop = NULL;
     animation_mapping[0] = 2;
     clsn = NULL;
+
+    // Testing Element
+    BaseElement * thing = new BaseElement(this);
+    add(thing);
 }
 
 void BaseObject::setX(int x) {
@@ -58,18 +63,22 @@ float BaseObject:: getVelY() {
     return velY;
 }
 
+void BaseObject::add(BaseElement * el) {
+	elements.push_back(el);
+}
+
 // Function to handle all sorts of things that happen inside this object every tick
-void BaseObject::update(BaseObject * things[]) {
+void BaseObject::update(std::vector<BaseObject> objects) {
 	xpos += velX;
 	ypos += velY;
 	if (clsn != NULL)
 		clsn->update(xpos, ypos);
 	bool hitFloor = false;
 	for (int i = 0; i < 2; i++) {
-		if (things[i] != this) {
-			if (things[i]->isSolid()) {
-				if (isColliding(things[i]->getClsn())) {
-					if (clsn->bottom >= things[i]->getClsn()->top) {
+		if (&objects.at(i) != this) {
+			if (objects.at(i).isSolid()) {
+				if (isColliding(objects.at(i).getClsn())) {
+					if (clsn->bottom >= objects.at(i).getClsn()->top) {
 						hitFloor = true;
 						velY = 0;
 					}
@@ -81,12 +90,9 @@ void BaseObject::update(BaseObject * things[]) {
 		velY += gravity;
 	}
     update_animation(); // update sprite animation ticks
-    if (!solid) {
-		if (keyboard_pressed(SDLK_LEFT))
-			xpos -= 2;
-		if (keyboard_pressed(SDLK_RIGHT))
-			xpos += 2;
-    }
+	for (unsigned int i = 0; i < elements.size(); i++) {
+		elements.at(i)->run();
+	}
 }
 
 SDL_Surface * BaseObject::draw(SDL_Surface * original) {
@@ -195,4 +201,40 @@ void BaseObject::update_animation() {
                 sprite_frame = 0; // if at end and looping is true, loop back to first frame
         }
     }
+}
+
+// --------------------------- Elements -----------------------------------
+BaseElement::BaseElement(BaseObject * p) {
+    parent = p;
+    initial_tick = true;
+}
+
+BaseObject * BaseElement::getParent() {
+	return parent;
+}
+
+void BaseElement::run() {
+	if (initial_tick) {
+		on_start();
+		initial_tick = false;
+	}
+	else {
+		on_tick();
+	}
+}
+
+void BaseElement::on_start() {
+}
+
+void BaseElement::on_tick() {
+	if (!parent->isSolid()) {
+		if (keyboard_pressed(SDLK_LEFT)) {
+			parent->setX(parent->getX() - 2);
+			return;
+		}
+		if (keyboard_pressed(SDLK_RIGHT)) {
+			parent->setX(parent->getX() + 2);
+			return;
+		}
+	}
 }
