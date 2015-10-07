@@ -1,4 +1,4 @@
-Platform Engine
+Potato Platform Engine
 ====================
 
 Yo dawgs we needa work on this shit.
@@ -29,3 +29,4 @@ Special Lighting Engine:
 - Able to manipuate lighting/color tones on sprites
 - Creates spotlights or areas with unique ambient lighting different from overall level lighting
 - Light/darkness areas (can set a level to be dark, and have a small light on player or something)
+- can generate 2D shadows?
